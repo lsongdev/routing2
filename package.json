@@ -1,7 +1,7 @@
 {
   "name": "routing2",
   "version": "0.0.1",
-  "description": "> parse http routing define",
+  "description": "parse http routing define",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

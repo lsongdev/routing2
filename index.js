@@ -16,29 +16,30 @@ function removeQuotes(input){
 
 exports.removeQuotes = removeQuotes;
 
-module.exports = function parseRoute(filename){
-  var content = fs.readFileSync(filename);
-  var routes = content.toString().split(TAG.EOL).map(function(line){
+module.exports = function parseRoute(content){
+  return content.toString().split(TAG.EOL).map(function(line){
     return line.trim();
   }).filter(function(line){
-    return line !== '' && (!(/^\/\//).test(line));
+    return line !== '' && (!(/^(\/\/|#)/).test(line));
   }).map(function(line){
     return line.split(TAG.TO).map(function(str){
       return str.trim();
     });
   }).map(function(item){
     if(item.length < 2){
-      throw new Error('invalidate route define', item);
+      throw new SyntaxError('Unexpected token', item);
     }
     var method_and_route      = removeQuotes(item[0].split(TAG.SPACE));
     var controller_and_action = removeQuotes(item[1].split(TAG.SHARP));
+    var keys = [];
+    var regexp = pathToRegexp(method_and_route[1], keys);
     return {
+      keys        : keys,
+      regexp      : regexp,
       route       : method_and_route[1],
       method      : method_and_route[0].toUpperCase(),
-      regexp      : pathToRegexp(method_and_route[1]),
+      action      : controller_and_action[1],
       controller  : controller_and_action[0],
-      action      : controller_and_action[1]
     }
   });
-  return routes;
 };
