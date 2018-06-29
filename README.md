@@ -18,9 +18,7 @@ $ npm install routing2
 const routing = require('routing2');
 
 const routes = routing.parse(`
-
-get /:name => home#index , { test: true }
-
+get /:name => home#index , a=1, b=2
 `);
 
 console.log(routes); // ->
@@ -29,7 +27,7 @@ console.log(routes); // ->
 	path: '/:name',
 	controller: 'home',
 	action: 'index',
-	options: { test: ture }
+	options: { a:1, b:2 }
 }
 ```
 

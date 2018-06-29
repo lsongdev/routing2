@@ -1,47 +1,58 @@
 const pathToRegexp = require('path-to-regexp');
 
-const TAG = {
-  TO    : '=>',
-  EOL   : '\n',
-  SPACE : /\s+/,
-  SHARP : '#',
+const parseLine = line => {
+  if (!line.trim() || /^(#|\/\/)/.test(line)) return;
+  const m = /(\w+)\s+(.+)\s*=>\s*(.+)#(\w+)(\s*,(.+))?/.exec(line);
+  if (!m) throw new SyntaxError('Unexpected token', line);
+  return {
+    method: m[1].trim().toLocaleUpperCase(),
+    path: m[2].trim(),
+    controller: m[3].trim(),
+    action: m[4].trim(),
+    options: JSON.parse(m[6])
+  };
 };
 
-function removeQuotes(input){
-  return input.map(function(item){
-    return item.trim().replace(/"|'/ig, '')
-  });
-};
-
-function parseRoute(content){
-  return content.toString().split(TAG.EOL).map(function(line){
-    return line.trim();
-  }).filter(function(line){
-    return line !== '' && (!(/^(\/\/|#)/).test(line));
-  }).map(function(line){
-    return line.split(TAG.TO).map(function(str){
-      return str.trim();
+const find = (routes, req) => {
+  const m = routes
+    .filter(route => route.regexp.test(req.path))
+    .sort((a, b) => {
+      const { priority: aPriority = 0 } = a.options;
+      const { priority: bPriority = 0 } = b.options;
+      return bPriority - aPriority;
     });
-  }).map(function(item){
-    if(item.length < 2){
-      throw new SyntaxError('Unexpected token', item);
-    }
-    var method_and_route      = removeQuotes(item[0].split(TAG.SPACE));
-    var controller_and_action = removeQuotes(item[1].split(TAG.SHARP));
-    var keys = [];
-    var regexp = pathToRegexp(method_and_route[1], keys);
-    return {
-      keys        : keys,
-      regexp      : regexp,
-      route       : method_and_route[1],
-      method      : method_and_route[0].toUpperCase(),
-      action      : controller_and_action[1],
-      controller  : controller_and_action[0],
-    }
+  if (!m.length) return;
+  const allowMethods = m.map(route => route.method);
+  const methodIndex = allowMethods.indexOf(req.method.toLocaleUpperCase());
+  if (!~methodIndex) return 405;
+  const route = m[methodIndex];
+  const args = route.regexp.exec(req.path).slice(1).map(arg => {
+    return arg === undefined ? arg : decodeURIComponent(arg);
   });
+  route.params = route.regexp.keys.reduce((params, key, i) => {
+    params[key.name] = args[i];
+    return params;
+  }, {});
+  return route;
 };
+
+const create = route => {
+  let keys = [];
+  route.method = route.method.toLocaleUpperCase();
+  route.regexp = pathToRegexp(route.path, keys);
+  route.regexp.keys = keys;
+  return route;
+};
+
+const parse = content =>
+  content.split(/\n/)
+  .map(parseLine)
+  .filter(Boolean)
+  .map(create);
 
 module.exports = {
-  parse: parseRoute,
-  removeQuotes
+  find,
+  create,
+  parse,
+  parseLine,
 };

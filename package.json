@@ -1,12 +1,15 @@
 {
   "name": "routing2",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "parse http routing define",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "route",
+    "http"
+  ],
   "author": "lsong",
   "license": "MIT",
   "repository": {
@@ -16,5 +19,12 @@
   "bugs": {
     "url": "https://github.com/song940/routing2/issues"
   },
-  "homepage": "https://github.com/song940/routing2#readme"
+  "homepage": "https://github.com/song940/routing2#readme",
+  "dependencies": {
+    "path-to-regexp": "^2.2.1"
+  },
+  "directories": {
+    "example": "example"
+  },
+  "devDependencies": {}
 }
