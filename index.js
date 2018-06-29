@@ -9,7 +9,7 @@ const parseLine = line => {
     path: m[2].trim(),
     controller: m[3].trim(),
     action: m[4].trim(),
-    options: JSON.parse(m[6])
+    options: m[6] && JSON.parse(m[6])
   };
 };
 
