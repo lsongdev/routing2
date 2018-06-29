@@ -1,5 +1,4 @@
-var fs = require('fs');
-var pathToRegexp = require('path-to-regexp');
+const pathToRegexp = require('path-to-regexp');
 
 const TAG = {
   TO    : '=>',
@@ -14,9 +13,7 @@ function removeQuotes(input){
   });
 };
 
-exports.removeQuotes = removeQuotes;
-
-module.exports = function parseRoute(content){
+function parseRoute(content){
   return content.toString().split(TAG.EOL).map(function(line){
     return line.trim();
   }).filter(function(line){
@@ -42,4 +39,9 @@ module.exports = function parseRoute(content){
       controller  : controller_and_action[0],
     }
   });
+};
+
+module.exports = {
+  parse: parseRoute,
+  removeQuotes
 };
