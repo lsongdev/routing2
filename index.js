@@ -1,3 +1,4 @@
+const fs = require('fs');
 const pathToRegexp = require('path-to-regexp');
 
 const parseLine = line => {
@@ -18,6 +19,10 @@ const parse = content =>
   .map(parseLine)
   .filter(Boolean)
   .map(create);
+
+const load = filename =>
+  parse(fs.readFileSync(filename, 'utf8'));
+
 
 const find = (routes, req) => {
   const m = routes
@@ -64,7 +69,8 @@ const create = route => {
 
 module.exports = {
   find,
-  create,
+  load,
   parse,
   parseLine,
+  create,
 };
