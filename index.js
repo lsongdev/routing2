@@ -25,9 +25,10 @@ const load = filename =>
 
 
 const find = (routes, req) => {
+  const [ domain, port ] = (req.host || '').split(':');
   const m = routes
     .filter(route =>
-      (route.domain ? route.domain === req.host : true) &&
+      (route.domain ? route.domain === domain : true) &&
       route.regexp.test(req.path))
     .sort((a, b) => {
       const { priority: aPriority = 0 } = a;
