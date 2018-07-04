@@ -13,6 +13,12 @@ const parseLine = line => {
   }
 };
 
+const parse = content =>
+  content.split(/\n/)
+  .map(parseLine)
+  .filter(Boolean)
+  .map(create);
+
 const find = (routes, req) => {
   const m = routes
     .filter(route =>
@@ -25,7 +31,7 @@ const find = (routes, req) => {
     });
   if (!m.length) return { status: 404 };
   const allowMethods = m.map(route => route.method);
-  const methodIndex = allowMethods.indexOf(req.method);
+  const methodIndex = allowMethods.findIndex(x => x === '*' || x === req.method);
   if (!~methodIndex && req.method === 'OPTIONS')
     return { status: 204, allowMethods, routes: m };
   if (!~methodIndex) return { status: 405 };
@@ -41,6 +47,8 @@ const find = (routes, req) => {
 };
 
 const create = route => {
+  if(typeof route === 'string')
+    route = parseLine(route);
   let keys = [];
   const { domain, path } = route;
   const i = path.indexOf('/');
@@ -48,17 +56,11 @@ const create = route => {
     route.domain = path.substr(0, i);
     route.path = path.substr(i);
   }
-  route.method = route.method.toUpperCase();
+  route.method = (route.method || '*').toUpperCase();
   route.regexp = pathToRegexp(route.path, keys);
   route.regexp.keys = keys;
   return route;
 };
-
-const parse = content =>
-  content.split(/\n/)
-  .map(parseLine)
-  .filter(Boolean)
-  .map(create);
 
 module.exports = {
   find,
