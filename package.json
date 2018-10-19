@@ -1,6 +1,6 @@
 {
   "name": "routing2",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "description": "parse http routing define",
   "main": "index.js",
   "scripts": {
@@ -20,11 +20,7 @@
     "url": "https://github.com/song940/routing2/issues"
   },
   "homepage": "https://github.com/song940/routing2#readme",
-  "dependencies": {
-    "path-to-regexp": "^2.2.1"
-  },
   "directories": {
     "example": "example"
-  },
-  "devDependencies": {}
+  }
 }
