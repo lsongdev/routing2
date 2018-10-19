@@ -1,4 +1,5 @@
 const fs = require('fs');
+const url = require('url');
 
 const parseLine = line => {
   if (!line.trim() || /^(#|\/\/)/.test(line)) return;
@@ -58,10 +59,11 @@ const pathToRegexp = path => {
 
 const find = (routes, req) => {
   const [ domain ] = (req.host || '').split(':');
+  const { pathname } = url.parse(req.url);
   const m = routes
     .filter(route =>
       (route.domain ? route.domain === domain : true) &&
-      route.regexp.test(req.path))
+      route.regexp.test(pathname))
     .sort((a, b) => {
       const { priority: aPriority = 0 } = a;
       const { priority: bPriority = 0 } = b;
@@ -74,7 +76,7 @@ const find = (routes, req) => {
     return { status: 204, allowMethods, routes: m };
   if (!~methodIndex) return { status: 405 };
   const route = m[ methodIndex ];
-  route.params = route.regexp.exec(req.path).slice(1).reduce((params, param, i) => {
+  route.params = route.regexp.exec(pathname).slice(1).reduce((params, param, i) => {
     params[ route.regexp.keys[i] ] = param && decodeURIComponent(param);
     return params;
   }, {});
