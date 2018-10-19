@@ -30,13 +30,14 @@ const load = filename =>
   parse(fs.readFileSync(filename, 'utf8'));
 
 const pathToRegexp = path => {
+  if(path instanceof RegExp) return path;
   let arr = path.split('/'), pattern = '', keys = [];
   (arr[0] === '') && arr.shift();
-  arr.forEach(p => {
+  arr.forEach((p, i) => {
     switch(p[0]){
       case '*':
         pattern += '/(.+)';
-        keys.push(p.substring(1));
+        keys.push(p.substring(1) || `$${i}`);
         break;
       case ':':
         const r = '([^/]+?)';
@@ -67,20 +68,16 @@ const find = (routes, req) => {
       return bPriority - aPriority;
     });
   if (!m.length) return { status: 404 };
-  const allowMethods = m.map(route => route.method);
-  const methodIndex = allowMethods.findIndex(x => x === '*' || x === req.method);
+  const allowMethods = m.map(route => route.method.toUpperCase());
+  const methodIndex = allowMethods.findIndex(x => x === '*' || x === req.method.toUpperCase());
   if (!~methodIndex && req.method === 'OPTIONS')
     return { status: 204, allowMethods, routes: m };
   if (!~methodIndex) return { status: 405 };
-  const route = m[methodIndex];
-  const args = route.regexp.exec(req.path).slice(1).map(arg => {
-    return arg === undefined ? arg : decodeURIComponent(arg);
-  });
-  console.log(args);
-  // route.params = route.regexp.keys.reduce((params, key, i) => {
-  //   params[key.name] = args[i];
-  //   return params;
-  // }, {});
+  const route = m[ methodIndex ];
+  route.params = route.regexp.exec(req.path).slice(1).reduce((params, param, i) => {
+    params[ route.regexp.keys[i] ] = param && decodeURIComponent(param);
+    return params;
+  }, {});
   return { status: 200, route };
 };
 
@@ -101,8 +98,9 @@ module.exports = {
   pathToRegexp
 };
 
-const r = pathToRegexp('/test/:name/*n');
-
-const args = r.exec('/test/aaa/123').slice(1)
-
-console.log(r.keys, args);
+// console.log(find([
+//   create('get / => home#index'),
+//   create('get /user/:user? => user#index'),
+// ], {
+//   method: 'get', path: '/user/song940'
+// }));
