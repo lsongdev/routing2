@@ -1,11 +1,15 @@
 const fs = require('fs');
 const url = require('url');
 
+function removeQuotes(str){
+  return str.trim().replace(/"|'/ig, '');
+};
+
 const parseLine = line => {
   if (!line.trim() || /^(#|\/\/)/.test(line)) return;
   const m = /(\w+)\s+(.+)\s*=>\s*(.+)#(\w+)(\s*,(.+))?/.exec(line);
   if (!m) throw new SyntaxError('Unexpected token', line);
-  let domain, path = m[2].trim();
+  let domain, path = removeQuotes(m[2].trim());
   const i = path.indexOf('/');
   if (i > 0) {
     domain = path.substr(0, i);
@@ -14,8 +18,8 @@ const parseLine = line => {
   return {
     domain,
     path,
-    action: m[4].trim(),
-    controller: m[3].trim(),
+    action: removeQuotes(m[4].trim()),
+    controller: removeQuotes(m[3].trim()),
     options: m[6] && JSON.parse(m[6]),
     method: m[1].trim().toUpperCase(),
   }
