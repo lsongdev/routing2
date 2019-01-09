@@ -4,13 +4,13 @@ const routes = routing.parse(`
 # xx
 get baidu.com/:name => home/aaa#index, { "a": true }
 // get /:all => home#all, { "priority": 1 }
-get "/x" => "user#index"
+get "/:x" => "user#index"
 `);
 
 const route = routing.find(routes, {
   // host: 'baidu.com',
   method: 'GET',
-  url: '/x'
+  url: '/1'
 });
 
-console.log(route);
+console.log(route.route.params);
