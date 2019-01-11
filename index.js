@@ -45,10 +45,14 @@ const pathToRegexp = path => {
         keys.push(p.substring(1) || `$${i}`);
         break;
       case ':':
+        const o = p.substr(-1);
         const r = '([^/]+?)';
-        const o = p.substr(-1) === '?';
-        pattern +=  o ? `(?:/${r})?` : `/${r}`;
-        keys.push(p.substring(1, p.length-o));
+        const m = {
+          '?': `(?:/${r})?`,
+          '*': '(.*)'
+        };
+        pattern += m[o] || `/${r}`;
+        keys.push(p.substring(1, p.length - !!m[o]));
         break;
       default:
         pattern += `/${p}`;
