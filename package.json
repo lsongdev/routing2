@@ -1,6 +1,6 @@
 {
   "name": "routing2",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "parse http routing define",
   "main": "index.js",
   "scripts": {
