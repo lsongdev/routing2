@@ -85,7 +85,6 @@ const find = (routes, req) => {
   if (!~methodIndex) return { status: 405 };
   const route = m[ methodIndex ];
   Object.defineProperty(route, 'params', {
-    enumerable: true,
     get: () => {
       return route.regexp.exec(pathname).slice(1).reduce((params, param, i) => {
         params[ route.regexp.keys[i] ] = param && decodeURIComponent(param);
