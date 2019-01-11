@@ -84,14 +84,10 @@ const find = (routes, req) => {
     return { status: 204, allowMethods, routes: m };
   if (!~methodIndex) return { status: 405 };
   const route = m[ methodIndex ];
-  Object.defineProperty(route, 'params', {
-    get: () => {
-      return route.regexp.exec(pathname).slice(1).reduce((params, param, i) => {
-        params[ route.regexp.keys[i] ] = param && decodeURIComponent(param);
-        return params;
-      }, {});
-    }
-  });
+  route.params = route.regexp.exec(pathname).slice(1).reduce((params, param, i) => {
+    params[ route.regexp.keys[i] ] = param && decodeURIComponent(param);
+    return params;
+  }, {});
   return { status: 200, route };
 };
 
