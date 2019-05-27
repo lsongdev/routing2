@@ -67,7 +67,7 @@ const pathToRegexp = path => {
 
 const find = (routes, req) => {
   const [ domain ] = (req.host || '').split(':');
-  const { pathname } = url.parse(req.url);
+  const { pathname, query } = url.parse(req.url, true);
   const m = routes
     .filter(route =>
       (route.domain ? route.domain === domain : true) &&
@@ -84,11 +84,13 @@ const find = (routes, req) => {
     return { status: 204, allowMethods, routes: m };
   if (!~methodIndex) return { status: 405 };
   const route = m[ methodIndex ];
-  route.params = route.regexp.exec(pathname).slice(1).reduce((params, param, i) => {
+  const params = route.regexp.exec(pathname).slice(1).reduce((params, param, i) => {
     params[ route.regexp.keys[i] ] = param && decodeURIComponent(param);
     return params;
   }, {});
-  return { status: 200, route };
+  // will deprecated in future
+  route.params = params;
+  return { status: 200, route, params, query };
 };
 
 const create = route => {
