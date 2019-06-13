@@ -49,7 +49,7 @@ const pathToRegexp = path => {
         const r = '([^/]+?)';
         const m = {
           '?': `(?:/${r})?`,
-          '*': '(.*)'
+          '*': '(?:/)(.*)'
         };
         pattern += m[o] || `/${r}`;
         keys.push(p.substring(1, p.length - !!m[o]));
