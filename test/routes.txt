@@ -1,0 +1,7 @@
+
+
+// home controller
+get / => home#index
+
+# user
+post /user => user#create

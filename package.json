@@ -1,0 +1,26 @@
+{
+  "name": "routing2",
+  "version": "0.0.15",
+  "description": "Parse HTTP Routing definition with no dependencies, just ~3kb!",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test"
+  },
+  "keywords": [
+    "route",
+    "http"
+  ],
+  "author": "lsong",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/song940/routing2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/song940/routing2/issues"
+  },
+  "homepage": "https://github.com/song940/routing2#readme",
+  "directories": {
+    "example": "example"
+  }
+}
